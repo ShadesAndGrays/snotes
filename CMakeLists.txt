@@ -2,21 +2,21 @@ cmake_minimum_required(VERSION 3.14)
 
 project(sticky_notes CXX)
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 set(src
+src/Notes.cpp
+src/exec_command.cpp
+src/Menu.cpp
 src/main.cpp
-src/testRapid.cpp
 )
 
 set (CMAKE_EXPORT_COMPILE_COMMANDS on )
 
-message("CMAKE BUILD TYPE: " ${CMAKE_BUILD_TYPE})
 
-add_compile_definitions(-DRAYGUI_IMPLEMENTATION)
 
 
 add_executable(${PROJECT_NAME} ${src})
-
-include_directories(include)
 
 
 find_package(raylib) 

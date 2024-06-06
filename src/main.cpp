@@ -1,19 +1,8 @@
-#include <cstddef>
-#include <fstream>
+#include <fmt/core.h>
 #include <raylib.h>
 #include <raygui.h>
-#include <array>
-
-
-#include <fmt/core.h>
-#include <unordered_map>
-
-
-class Notes{
-    public:
-        Rectangle bounds;
-        std::string text;
-};
+#include <Notes.hpp>
+#include <Menu.hpp>
 
 
 
@@ -22,21 +11,15 @@ void test();
 
 int main() {
 
-
-    InitWindow(800, 800, "Sticky Notest");
-
+    InitWindow(800, 800, "Sticky Notes");
+    NoteManger nm;
 
     while(!WindowShouldClose()){
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-
-        initMenu(menu_bar_items,2);
-        // GuiListView(listState.bounds,listState.text,listState.scrollIndex,listState.active);
-        // GuiDropdownBox(listState.bounds,listState.text,listState.active, true);
-
+        Menu::initMenu(Menu::menu_bar_items,2,nm);
+        nm.draw();
         EndDrawing();
-
     }
-
 }
