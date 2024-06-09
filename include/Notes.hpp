@@ -14,6 +14,7 @@ class NoteManger{
     std::vector<std::shared_ptr<Note>> notes;
     std::shared_ptr<Note> selected;
     Vector2 selectedOffset;
+    Vector2 WorldOffset;
 
     public: 
     NoteManger();
@@ -29,6 +30,7 @@ class Note{
     private:
         bool leftClicked;
         bool hovered;
+        Vector2 offset;
     public:
         Rectangle bounds;
         std::string text;
@@ -39,5 +41,6 @@ class Note{
         bool isLeftClicked();
         void update();
         void draw();
+        void setOffset(Vector2 offset);
 };
 

@@ -42,7 +42,6 @@ inline std::unordered_map<std::string, MENU_ITEM> menuItems{
 };
 
 
-void initMenu(std::array<const char *, 3> &items,size_t n,NoteManger &nm);
-void handleFile();
+void GuiMenu(std::array<const char *, 3> &items,size_t n,NoteManger &nm);
 
 };

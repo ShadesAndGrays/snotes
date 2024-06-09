@@ -19,8 +19,8 @@ return 0; */
         nm.update();
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        Menu::initMenu(Menu::menu_bar_items,3,nm);
         nm.draw();
+        Menu::GuiMenu(Menu::menu_bar_items,3,nm);
         EndDrawing();
     }
 

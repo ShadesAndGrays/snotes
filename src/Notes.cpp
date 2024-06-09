@@ -35,6 +35,7 @@
 */
 
 NoteManger::NoteManger(){
+    WorldOffset = Vector2Zero();
  notes.push_back(std::make_shared<Note>(Vector2{100,200},"Hello world"));
 }
 void NoteManger::load(std::string jpath){
@@ -138,9 +139,16 @@ void NoteManger::save(std::string path){
 
 void NoteManger::update(){
 
+    if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)){
+
+        WorldOffset = Vector2Add(WorldOffset, GetMouseDelta());
+    }
+
+
 
     for(auto i : notes){
         i->update();
+        i->setOffset(WorldOffset);
         if (selected == nullptr && i->isLeftClicked()) {
             selected = i;
             selectedOffset = Vector2Subtract( GetMousePosition(),{selected->bounds.x,selected->bounds.y});
@@ -176,8 +184,8 @@ bool Note::isHovered(){return hovered;}
 
 void Note::update(){
 
-    bool withinXBounds =GetMouseX()  - bounds.x > 0 && GetMouseX() - bounds.x < bounds.width ;
-    bool withinYBounds =GetMouseY()  - bounds.y > 0 && GetMouseY() - bounds.y < bounds.height;
+    bool withinXBounds =GetMouseX()  - (offset.x + bounds.x) > 0 && GetMouseX() - (offset.x +bounds.x) < bounds.width ;
+    bool withinYBounds =GetMouseY()  - (offset.y +bounds.y) > 0 && GetMouseY() - (offset.y +bounds.y) < bounds.height;
     if (withinXBounds && withinYBounds){
         hovered = true;
     }
@@ -192,14 +200,14 @@ void Note::update(){
     }
 }
 void Note::draw(){
-    DrawRectangle(bounds.x-1, bounds.y-1, bounds.width+2, bounds.height+2, isLeftClicked()? BLUE: BLACK);
+    DrawRectangle(offset.x + bounds.x-1,offset.y + bounds.y-1, bounds.width+2, bounds.height+2, isLeftClicked()? BLUE: BLACK);
 
-    DrawRectangle(bounds.x, bounds.y, bounds.width, bounds.height,WHITE);
+    DrawRectangle(offset.x + bounds.x,offset.y + bounds.y, bounds.width, bounds.height,WHITE);
 
     // GuiGetStyle(, int property);
     // GuiSetStyle(DEFAULT, TEXT_PADDING, 0);
-    GuiDrawText(&text[0], bounds, TEXT_ALIGN_CENTER, BLACK);
-    auto difference = Vector2Subtract( GetMousePosition(),{bounds.x,bounds.y});
+    GuiDrawText(&text[0], {offset.x + bounds.x,offset.y + bounds.y,bounds.width,bounds.height}, TEXT_ALIGN_CENTER, BLACK);
+    auto difference = Vector2Subtract( GetMousePosition(),{offset.x + bounds.x, offset.y + bounds.y});
     auto mappedPotsition =  Vector2Subtract(GetMousePosition(), difference );
     DrawCircleV(difference, 10, RED);
     DrawCircleV(mappedPotsition, 5, PURPLE);
@@ -209,4 +217,7 @@ void Note::draw(){
 void Note::setPosition(Vector2 position){
     this->bounds.x = position.x;
     this->bounds.y = position.y;
+}
+void Note::setOffset(Vector2 offset){
+    this->offset = offset;
 }
