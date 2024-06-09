@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 #include <fmt/core.h>
 #include <ios>
 #include <iostream>
@@ -6,7 +7,60 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/rapidjson.h>
+#include <rapidjson/stringbuffer.h>
+#include <string>
 
+void test2(){
+    rapidjson::Document docs;
+
+    docs.Parse("{}");
+
+    std::string names[10] = {
+        "Hero",
+        "Samason",
+        "Teeny",
+        "Hamada",
+        "Ariel",
+        "Chang Sha",
+        "Shamson",
+        "Cavel",
+        "Cream",
+        "Shadow"
+    };
+
+    rapidjson::StringBuffer sb;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+
+    rapidjson::Value arr(rapidjson::kArrayType); 
+
+    for (int i = 0; i < 10; i++){
+
+        rapidjson::Value obj(rapidjson::kObjectType); 
+        rapidjson::Value uname(rapidjson::kStringType);
+        rapidjson::Value age(rapidjson::kNumberType);
+        char x[10] = "Number";
+        
+        uname.SetString( &names[i][0] ,names[i].size());
+        age.SetInt(i);
+        obj.AddMember("Name",uname,docs.GetAllocator());
+        obj.AddMember("Age",age,docs.GetAllocator());
+
+        arr.PushBack(obj,docs.GetAllocator());
+     writer.Reset(sb);
+        sb.Clear();
+        arr.Accept(writer);
+        puts(sb.GetString());
+    }
+
+    docs.AddMember("Notes",arr,docs.GetAllocator());
+
+
+     writer.Reset(sb);
+    sb.Clear();
+    docs.Accept(writer);
+    puts(sb.GetString());
+
+}
 void test(){
     rapidjson::Document docs;
 
@@ -50,7 +104,7 @@ void test(){
     sb.Clear();
     writer.Reset(sb);
     docs.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
-                                      //
+                            //
     file.open("test.json",std::ios_base::out);
 
     file.write(sb.GetString(),sb.GetSize());

@@ -5,11 +5,6 @@
 #include <vector>
 #include <raylib.h>
 
-#undef  RAYGUI_IMPLEMENTATION
-
-#ifndef RAYGUI_IMPLEMENTATION
-#include <raygui.h>
-#endif
 
 class Note;
 
@@ -17,6 +12,8 @@ class NoteManger{
 
     private:
     std::vector<std::shared_ptr<Note>> notes;
+    std::shared_ptr<Note> selected;
+    Vector2 selectedOffset;
 
     public: 
     NoteManger();
@@ -29,11 +26,17 @@ class NoteManger{
 
 
 class Note{
+    private:
+        bool leftClicked;
+        bool hovered;
     public:
         Rectangle bounds;
         std::string text;
 
-        Note(Vector2 postion,std::string text);
+        Note(Vector2 position,std::string text);
+        void setPosition(Vector2 position);
+        bool isHovered();
+        bool isLeftClicked();
         void update();
         void draw();
 };

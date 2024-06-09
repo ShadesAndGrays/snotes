@@ -37,8 +37,8 @@ inline std::array<const char *, 3> menu_bar_items={
 
 inline std::unordered_map<std::string, MENU_ITEM> menuItems{
     {menu_bar_items[0],MENU_ITEM::SAVE},
-    {menu_bar_items[0],MENU_ITEM::LOAD},
-    {menu_bar_items[1],MENU_ITEM::EXIT},
+    {menu_bar_items[1],MENU_ITEM::LOAD},
+    {menu_bar_items[2],MENU_ITEM::EXIT},
 };
 
 

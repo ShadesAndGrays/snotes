@@ -1,6 +1,5 @@
 #include <fmt/core.h>
 #include <raylib.h>
-#include <raygui.h>
 #include <Notes.hpp>
 #include <Menu.hpp>
 
@@ -8,18 +7,22 @@
 
 
 void test();
+void test2();
 
 int main() {
-
+    /* test2();
+return 0; */
     InitWindow(800, 800, "Sticky Notes");
     NoteManger nm;
 
     while(!WindowShouldClose()){
-
+        nm.update();
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        Menu::initMenu(Menu::menu_bar_items,2,nm);
+        Menu::initMenu(Menu::menu_bar_items,3,nm);
         nm.draw();
         EndDrawing();
     }
+
+    
 }

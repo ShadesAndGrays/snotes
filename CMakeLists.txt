@@ -5,6 +5,7 @@ project(sticky_notes CXX)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(src
+src/testRapid.cpp
 src/Notes.cpp
 src/exec_command.cpp
 src/Menu.cpp
@@ -13,6 +14,9 @@ src/main.cpp
 
 set (CMAKE_EXPORT_COMPILE_COMMANDS on )
 
+add_compile_definitions(
+    RAYGUI_IMPLEMENTATION
+)
 
 
 
