@@ -9,6 +9,7 @@ class Editor{
         std::string text;
         bool editBthClicked;
         bool close;
+        bool editing;
 
     public:
         Editor(std::shared_ptr<Note> note);
@@ -17,6 +18,7 @@ class Editor{
         void draw();
         void update();
         bool shouldClose();
+        bool isConnected();
 
 
 

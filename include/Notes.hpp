@@ -24,6 +24,7 @@ class NoteManger{
     void handleEditing(std::shared_ptr<Note> note);
     void renderEditor(std::shared_ptr<Note> note);
 
+    void bringForward();
 
     public: 
     NoteManger();
@@ -48,6 +49,7 @@ class Note{
         std::string text;
 
         Note(Vector2 position,std::string text);
+        ~Note();
         void setPosition(Vector2 position);
         bool isHovered();
         bool isLeftClicked();
@@ -55,5 +57,6 @@ class Note{
         void update();
         void draw();
         void setOffset(Vector2 offset);
+        
 };
 

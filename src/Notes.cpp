@@ -139,7 +139,7 @@ void NoteManger::save(std::string path){
 
 }
 void NoteManger::addNote(){
-    notes.push_back(std::make_shared<Note>( Vector2{10,10}, "Nil"));
+    notes.push_back(std::make_shared<Note>( Vector2{10.0f + (rand() % 10 -5 ),10.0f + (rand() % 5)}, "Nil"));
 }
 void NoteManger::deleteNote(){
     if (!editing)
@@ -147,7 +147,8 @@ void NoteManger::deleteNote(){
     for (auto it = notes.begin(); it != notes.end(); it++){
         if (*it == editing)
         {
-
+            editing = nullptr;
+            editor = nullptr;
             it = notes.erase(it);
             return;
         }
@@ -176,9 +177,23 @@ void NoteManger::handleSelection(std::shared_ptr<Note> note){
     }
 
 }
+void NoteManger::bringForward(){
+    if (selected == nullptr)
+        return;
+    if (*(notes.end()) == selected)
+       return; 
+   for (auto it = notes.begin(); it != notes.end(); it++){
+                if (*it != selected) 
+                    continue;
+                notes.erase(it);
+                break;
+            }
+    notes.insert(notes.end(),selected);
+
+}
 void NoteManger::update(){
     calculateOffset();
-
+    bringForward();
 
     for(auto i : notes){
         i->update();
@@ -190,6 +205,7 @@ void NoteManger::update(){
 }
 
 void NoteManger::handleEditing(std::shared_ptr<Note> note){
+        
         if(editing == nullptr && note -> isRightClicked()){
             editing = note;
             editor = std::make_unique<Editor>(editing);
@@ -208,11 +224,9 @@ void NoteManger::renderEditor(std::shared_ptr<Note> note){
 
         editor->update();
         editor->draw();
-        if (editor->shouldClose()){
+        if (editor->shouldClose() || !editor->isConnected()){
             editor = nullptr;
         }
-    
-
 }
 
 void NoteManger::draw(){
@@ -271,13 +285,19 @@ void Note::draw(){
     GuiSetStyle(LABEL,TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
     auto wrap =  GuiGetStyle(DEFAULT, TEXT_WRAP_MODE);
     auto valign =  GuiGetStyle(DEFAULT, TEXT_ALIGNMENT_VERTICAL);
+    auto psize = GuiGetStyle(DEFAULT, TEXT_SIZE);
+    auto lineHeight = GuiGetStyle(DEFAULT, TEXT_LINE_SPACING);
     GuiSetStyle(DEFAULT, TEXT_WRAP_MODE, TEXT_WRAP_WORD);
     GuiSetStyle(DEFAULT, TEXT_ALIGNMENT_VERTICAL, TEXT_ALIGN_TOP);
+    GuiSetStyle(DEFAULT,TEXT_SIZE, 20);
+    GuiSetStyle(DEFAULT, TEXT_LINE_SPACING, 20);
     GuiLabel({offset.x + bounds.x,offset.y + bounds.y,bounds.width,bounds.height}, &text[0]);
     //GuiDrawText(&text[0], {offset.x + bounds.x,offset.y + bounds.y,bounds.width,bounds.height}, TEXT_ALIGN_CENTER, BLACK);
 
     GuiSetStyle(DEFAULT, TEXT_WRAP_MODE,  wrap);
     GuiSetStyle(DEFAULT, TEXT_ALIGNMENT_VERTICAL,  valign);
+    GuiSetStyle(DEFAULT,TEXT_SIZE, psize);
+    GuiSetStyle(DEFAULT, TEXT_LINE_SPACING, lineHeight);
 
 
 }
@@ -288,4 +308,8 @@ void Note::setPosition(Vector2 position){
 }
 void Note::setOffset(Vector2 offset){
     this->offset = offset;
+}
+Note::~Note(){
+    std::cout << "Destroying note: " << text << std::endl;
+
 }

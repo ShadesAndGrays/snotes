@@ -15,6 +15,8 @@ src/Notes.cpp
 
 set (CMAKE_EXPORT_COMPILE_COMMANDS on )
 
+set(CMAKE_BUILD_TYPE Release)
+
 #[[ add_compile_definitions(
     RAYGUI_IMPLEMENTATION
 ) ]]
@@ -32,3 +34,5 @@ find_package(RapidJSON)
 target_link_libraries(${PROJECT_NAME} raylib fmt)
 
 file(COPY ${CMAKE_SOURCE_DIR}/test.json DESTINATION ${CMAKE_BINARY_DIR})
+
+install(TARGETS ${PROJECT_NAME})
