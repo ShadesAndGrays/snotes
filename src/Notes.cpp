@@ -1,22 +1,24 @@
 
-#include <Notes.hpp>
+#include "Editor.hpp"
+#include <fmt/core.h>
+
 #include <cstdlib>
 #include <filesystem>
-#include <fmt/core.h>
 #include <fstream>
 #include <iostream>
 #include <memory>
+
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/ostreamwrapper.h>
+
 #include <raylib.h>
 #include <raymath.h>
-
 #include <raygui.h>
-#undef  RAYGUI_IMPLEMENTATION
+#include <Notes.hpp>
 
 /*
  save format::
@@ -136,25 +138,31 @@ void NoteManger::save(std::string path){
 
 
 }
+void NoteManger::addNote(){
+    notes.push_back(std::make_shared<Note>( Vector2{10,10}, "Nil"));
+}
+void NoteManger::deleteNote(){
+    if (!editing)
+        return;
+    for (auto it = notes.begin(); it != notes.end(); it++){
+        if (*it == editing)
+        {
 
-void NoteManger::update(){
-
-    if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)){
-
-        WorldOffset = Vector2Add(WorldOffset, GetMouseDelta());
-    }
-
-
-
-    for(auto i : notes){
-        i->update();
-        i->setOffset(WorldOffset);
-        if (selected == nullptr && i->isLeftClicked()) {
-            selected = i;
-            selectedOffset = Vector2Subtract( GetMousePosition(),{selected->bounds.x,selected->bounds.y});
+            it = notes.erase(it);
+            return;
         }
     }
 
+}
+
+void NoteManger::calculateOffset(){
+
+    if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE)){
+
+        WorldOffset = Vector2Add(WorldOffset, GetMouseDelta());
+    }
+}
+void NoteManger::handleSelection(std::shared_ptr<Note> note){
     if (selected != nullptr){
         auto mappedPotsition =  Vector2Subtract(GetMousePosition(), selectedOffset );
         selected->setPosition(mappedPotsition);
@@ -162,6 +170,49 @@ void NoteManger::update(){
             selected = nullptr;
         }
     }
+    else if (selected == nullptr && note->isLeftClicked()) {
+        selected = note;
+        selectedOffset = Vector2Subtract( GetMousePosition(),{selected->bounds.x,selected->bounds.y});
+    }
+
+}
+void NoteManger::update(){
+    calculateOffset();
+
+
+    for(auto i : notes){
+        i->update();
+        i->setOffset(WorldOffset);
+        handleSelection(i);
+        handleEditing(i);
+    }
+
+}
+
+void NoteManger::handleEditing(std::shared_ptr<Note> note){
+        if(editing == nullptr && note -> isRightClicked()){
+            editing = note;
+            editor = std::make_unique<Editor>(editing);
+    
+        }else if( note -> isRightClicked()){
+            editor = nullptr;
+            editing = note;
+            editor = std::make_unique<Editor>(editing);
+        }
+        if(editor){
+            renderEditor(editing);
+        }
+
+}
+void NoteManger::renderEditor(std::shared_ptr<Note> note){
+
+        editor->update();
+        editor->draw();
+        if (editor->shouldClose()){
+            editor = nullptr;
+        }
+    
+
 }
 
 void NoteManger::draw(){
@@ -173,13 +224,14 @@ void NoteManger::draw(){
 Note::Note(Vector2 position,std::string text){
     bounds.x = position.x;
     bounds.y = position.y;
-    bounds.width = 100;
-    bounds.height = 150;
+    bounds.width = 200;
+    bounds.height = 170;
 
     this->text = text;
 }
 
 bool Note::isLeftClicked(){return leftClicked;}
+bool Note::isRightClicked(){return rightClicked;}
 bool Note::isHovered(){return hovered;}
 
 void Note::update(){
@@ -198,19 +250,35 @@ void Note::update(){
     else{
         leftClicked = false;
     }
+    if (isHovered() && IsMouseButtonDown(MOUSE_BUTTON_RIGHT)){
+        rightClicked = true;
+    }
+    else{
+        rightClicked = false;
+    }
 }
 void Note::draw(){
     DrawRectangle(offset.x + bounds.x-1,offset.y + bounds.y-1, bounds.width+2, bounds.height+2, isLeftClicked()? BLUE: BLACK);
 
     DrawRectangle(offset.x + bounds.x,offset.y + bounds.y, bounds.width, bounds.height,WHITE);
 
-    // GuiGetStyle(, int property);
-    // GuiSetStyle(DEFAULT, TEXT_PADDING, 0);
-    GuiDrawText(&text[0], {offset.x + bounds.x,offset.y + bounds.y,bounds.width,bounds.height}, TEXT_ALIGN_CENTER, BLACK);
     auto difference = Vector2Subtract( GetMousePosition(),{offset.x + bounds.x, offset.y + bounds.y});
     auto mappedPotsition =  Vector2Subtract(GetMousePosition(), difference );
-    DrawCircleV(difference, 10, RED);
+    /* DrawCircleV(difference, 10, RED);
     DrawCircleV(mappedPotsition, 5, PURPLE);
+    auto x = TEXT_ALIGN_CENTER; */
+
+    GuiSetStyle(LABEL,TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+    auto wrap =  GuiGetStyle(DEFAULT, TEXT_WRAP_MODE);
+    auto valign =  GuiGetStyle(DEFAULT, TEXT_ALIGNMENT_VERTICAL);
+    GuiSetStyle(DEFAULT, TEXT_WRAP_MODE, TEXT_WRAP_WORD);
+    GuiSetStyle(DEFAULT, TEXT_ALIGNMENT_VERTICAL, TEXT_ALIGN_TOP);
+    GuiLabel({offset.x + bounds.x,offset.y + bounds.y,bounds.width,bounds.height}, &text[0]);
+    //GuiDrawText(&text[0], {offset.x + bounds.x,offset.y + bounds.y,bounds.width,bounds.height}, TEXT_ALIGN_CENTER, BLACK);
+
+    GuiSetStyle(DEFAULT, TEXT_WRAP_MODE,  wrap);
+    GuiSetStyle(DEFAULT, TEXT_ALIGNMENT_VERTICAL,  valign);
+
 
 }
 

@@ -1,13 +1,18 @@
-#include <Menu.hpp>
+#include <Notes.hpp>
 
-#include <fmt/core.h>
 #include <raylib.h>
 
-#undef  RAYGUI_IMPLEMENTATION
 #include <raygui.h>
 
+#include <Menu.hpp>
 
-void Menu::GuiMenu(std::array<const char *, 3> &items,size_t n,NoteManger &nm){
+
+
+#include <fmt/core.h>
+
+
+
+void Menu::GuiMenu(std::array<const char *, 5> &items,size_t n,NoteManger &nm){
      listView.bounds = Rectangle{0,30,40,60};
      listView.text = "Save \n Load \n Exit";
      listView.active = false;
@@ -35,6 +40,14 @@ void Menu::GuiMenu(std::array<const char *, 3> &items,size_t n,NoteManger &nm){
 
                                            break;
                                        };
+                case MENU_ITEM::ADD:{
+                                        nm.addNote();
+                                        break;
+                                     }
+                case MENU_ITEM::DEL:{
+                                        nm.deleteNote();
+                                        break;
+                                     }
                 case MENU_ITEM::EXIT:{
                                          CloseWindow();
                                          break;
