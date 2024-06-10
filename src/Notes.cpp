@@ -180,7 +180,7 @@ void NoteManger::handleSelection(std::shared_ptr<Note> note){
 void NoteManger::bringForward(){
     if (selected == nullptr)
         return;
-    if (*(notes.end()) == selected)
+    if (notes[0] == selected)
        return; 
    for (auto it = notes.begin(); it != notes.end(); it++){
                 if (*it != selected) 
@@ -188,7 +188,7 @@ void NoteManger::bringForward(){
                 notes.erase(it);
                 break;
             }
-    notes.insert(notes.end(),selected);
+    notes.insert(notes.begin(),selected);
 
 }
 void NoteManger::update(){
@@ -230,8 +230,8 @@ void NoteManger::renderEditor(std::shared_ptr<Note> note){
 }
 
 void NoteManger::draw(){
-    for(auto i : notes){
-        i->draw();
+    for(auto it = notes.end() -1 ; it != notes.begin()-1; it--){
+        (*it)->draw();
     }
 }
 
